@@ -3,6 +3,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TodosModule } from './todos/todos.module';
+import { TodoEntity } from './todos/entities/todo.entity';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { TodosModule } from './todos/todos.module';
       username: 'root',
       password: 'ajdajdsiasia',
       database: 'todo_test',
-      models: [],
+      models: [TodoEntity],
     }),
     TodosModule,
   ],
