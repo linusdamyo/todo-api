@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { TodosModule } from './todos/todos.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AppService } from './app.service';
       database: 'todo_test',
       models: [],
     }),
+    TodosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
