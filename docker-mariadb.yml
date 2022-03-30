@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  db:
+    container_name: todo-db
+    image: mariadb:10.0.24
+    volumes:
+      - ./docker-volume/mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=ajdajdsiasia
+    ports:
+      - 3306:3306
+
