@@ -1,11 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { TodoEntity } from './entities/todo.entity';
 
 @Injectable()
 export class TodosService {
-  create(createTodoDto: CreateTodoDto) {
-    return 'This action adds a new todo';
+  constructor(
+    @InjectModel(TodoEntity)
+    private todoModel: typeof TodoEntity,
+  ) {}
+
+  async create(createTodoDto: CreateTodoDto) {
+    const todoInfo = await this.todoModel.create({
+      contents: createTodoDto.contents,
+    });
+    return { id: todoInfo.id };
   }
 
   findAll() {

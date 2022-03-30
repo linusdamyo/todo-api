@@ -17,6 +17,10 @@ describe('todos', () => {
     await app.init();
   });
 
+  afterAll(async () => {
+    await TodoEntity.destroy({ truncate: true, force: true });
+  });
+
   it('TODO 생성', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/todos')
