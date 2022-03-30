@@ -6,12 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  UseFilters,
 } from '@nestjs/common';
 import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { HttpExceptionFilter } from '../common/exception/http-exception.filter';
 
 @Controller('/todos')
+@UseFilters(new HttpExceptionFilter())
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 

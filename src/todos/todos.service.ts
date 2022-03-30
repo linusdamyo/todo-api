@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
@@ -15,7 +15,9 @@ export class TodosService {
     const todoInfo = await this.todoModel.create({
       contents: createTodoDto.contents,
     });
-    return { id: todoInfo.id };
+    if (!todoInfo) throw new ConflictException('cannot create todo.');
+
+    return { id: todoInfo?.id ?? 0 };
   }
 
   findAll() {
