@@ -6,6 +6,7 @@ import { TodoEntity } from '../src/todos/entities/todo.entity';
 
 describe('todos', () => {
   let app: INestApplication;
+  let todoId: number;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -27,7 +28,8 @@ describe('todos', () => {
       .send({ contents: '첫번째 TODO' });
     expect(res.statusCode).toBe(201);
     expect(res.body.id).toBeDefined();
-    const todoInfo = await TodoEntity.findOne({ where: { id: res.body.id } });
+    todoId = res.body.id;
+    const todoInfo = await TodoEntity.findOne({ where: { id: todoId } });
     expect(todoInfo.contents).toBe('첫번째 TODO');
   });
 
@@ -45,5 +47,14 @@ describe('todos', () => {
         },
       ],
     });
+  });
+
+  it('TODO 수정', async () => {
+    const res = await request(app.getHttpServer())
+      .patch(`/api/todos/${todoId}`)
+      .send({ contents: '첫번째 TODO 내용을 수정' });
+    expect(res.statusCode).toBe(200);
+    const todoInfo = await TodoEntity.findOne({ where: { id: todoId } });
+    expect(todoInfo.contents).toBe('첫번째 TODO 내용을 수정');
   });
 });
