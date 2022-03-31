@@ -11,6 +11,7 @@ import { TodoListResponseDto } from './dto/todo-list-response.dto';
 import { IdResponseDto } from '../common/dto/id-response.dto';
 import { ReferenceTodoRequestDto } from './dto/reference-todo-request.dto';
 import { TodoReferenceEntity } from './entities/todo-reference.entity';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class TodosService {
@@ -58,6 +59,17 @@ export class TodosService {
 
   async done(id: number) {
     const todoInfo = await this.getTodoInfo(id);
+
+    const referenceIdList = todoInfo.todoReferenceList.map(
+      (r) => r.reference_id,
+    );
+    if (
+      (await this.todoModel.count({
+        where: { is_done: false, id: { [Op.in]: referenceIdList } },
+      })) > 0
+    ) {
+      throw new BadRequestException('완료되지 않은 관련 항목이 존재합니다.');
+    }
 
     await this.todoModel.update(
       { is_done: true },
