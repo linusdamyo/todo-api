@@ -160,5 +160,24 @@ describe('todos', () => {
       );
       expect(res.statusCode).toBe(400);
     });
+
+    it('TODO 리스트 검색 - 내용에 3이 들어간 경우', async () => {
+      const res = await request(app.getHttpServer()).get('/api/todos').query({
+        contents: '3',
+      });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        list: [
+          {
+            id: res.body.list?.[0]?.id,
+            contents: 'todo 아이템 3',
+            isDone: false,
+            createdAt: res.body.list?.[0]?.createdAt,
+            updatedAt: res.body.list?.[0]?.updatedAt,
+            referenceList: [],
+          },
+        ],
+      });
+    });
   });
 });
