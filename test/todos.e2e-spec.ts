@@ -84,4 +84,49 @@ describe('todos', () => {
     const todoInfo = await TodoEntity.findOne({ where: { id: todoId } });
     expect(todoInfo).toBeNull();
   });
+
+  describe('TODO 참조 테스트', () => {
+    const todoInfoList: TodoEntity[] = [];
+
+    beforeAll(async () => {
+      {
+        const todoInfo = await TodoEntity.create({ contents: 'todo 아이템 2' });
+        todoInfoList.push(todoInfo);
+      }
+      {
+        const todoInfo = await TodoEntity.create({ contents: 'todo 아이템 3' });
+        todoInfoList.push(todoInfo);
+      }
+    });
+
+    it('TODO 리스트', async () => {
+      const res = await request(app.getHttpServer()).get('/api/todos');
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        list: [
+          {
+            id: res.body.list[0].id,
+            contents: 'todo 아이템 3',
+            isDone: false,
+            createdAt: res.body.list[0].createdAt,
+            updatedAt: res.body.list[0].updatedAt,
+          },
+          {
+            id: res.body.list[1].id,
+            contents: 'todo 아이템 2',
+            isDone: false,
+            createdAt: res.body.list[1].createdAt,
+            updatedAt: res.body.list[1].updatedAt,
+          },
+        ],
+      });
+    });
+
+    it('TODO 아이템 참조', async () => {
+      const res = await request(app.getHttpServer())
+        .post(`/api/todos/${todoInfoList[0].id}/reference`)
+        .send({ referenceId: todoInfoList[1].id });
+      expect(res.statusCode).toBe(201);
+    });
+  });
 });
