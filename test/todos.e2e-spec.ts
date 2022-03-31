@@ -189,5 +189,15 @@ describe('todos', () => {
         list: [],
       });
     });
+
+    it('TODO 리스트 검색 - 생성일 기준 구간 검색', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/todos')
+        .query({ createdRange: ['2022-03-01', '2022-03-02'] });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        list: [],
+      });
+    });
   });
 });
