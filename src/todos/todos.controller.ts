@@ -12,6 +12,7 @@ import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { HttpExceptionFilter } from '../common/exception/http-exception.filter';
+import { TodoListResponseDto } from './dto/todo-list-response.dto';
 
 @Controller('/todos')
 @UseFilters(new HttpExceptionFilter())
@@ -19,12 +20,12 @@ export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
   @Post()
-  create(@Body() createTodoDto: CreateTodoDto) {
+  async create(@Body() createTodoDto: CreateTodoDto) {
     return this.todosService.create(createTodoDto);
   }
 
   @Get()
-  findAll() {
+  async findAll(): Promise<TodoListResponseDto> {
     return this.todosService.findAll();
   }
 

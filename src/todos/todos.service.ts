@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoEntity } from './entities/todo.entity';
+import { TodoListResponseDto } from './dto/todo-list-response.dto';
 
 @Injectable()
 export class TodosService {
@@ -20,8 +21,15 @@ export class TodosService {
     return { id: todoInfo?.id ?? 0 };
   }
 
-  findAll() {
-    return `This action returns all todos`;
+  async findAll(): Promise<TodoListResponseDto> {
+    const todoInfoList: TodoEntity[] = (
+      await this.todoModel.findAll({
+        where: { deleted_at: null },
+        order: [['id', 'DESC']],
+      })
+    ).map((el) => el.get({ plain: true }));
+
+    return new TodoListResponseDto(todoInfoList);
   }
 
   findOne(id: number) {
