@@ -117,6 +117,13 @@ describe('todos', () => {
       );
     });
 
+    it('TODO 아이템 순환참조는 불가', async () => {
+      const res = await request(app.getHttpServer())
+        .post(`/api/todos/${todoInfoList[1].id}/reference`)
+        .send({ referenceId: todoInfoList[0].id });
+      expect(res.statusCode).toBe(400);
+    });
+
     it('TODO 리스트 with 참조목록', async () => {
       const res = await request(app.getHttpServer()).get('/api/todos');
       expect(res.statusCode).toBe(200);
