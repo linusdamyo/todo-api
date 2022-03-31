@@ -13,6 +13,7 @@ import { ReferenceTodoRequestDto } from './dto/reference-todo-request.dto';
 import { TodoReferenceEntity } from './entities/todo-reference.entity';
 import { Op } from 'sequelize';
 import { TodoListQueryRequestDto } from './dto/todo-list-query-request.dto';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class TodosService {
@@ -39,6 +40,12 @@ export class TodosService {
     }
     if (['true', 'false'].includes(reqDto.isDone)) {
       searchOption['is_done'] = reqDto.isDone === 'true';
+    }
+    if (reqDto.createdRange) {
+      searchOption['created_at'] = {
+        [Op.gte]: dayjs(reqDto.createdRange[0]).toDate(),
+        [Op.lt]: dayjs(reqDto.createdRange[1]).add(1, 'days').toDate(),
+      };
     }
 
     const todoInfoList: TodoEntity[] = (
