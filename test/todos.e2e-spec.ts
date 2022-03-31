@@ -179,5 +179,15 @@ describe('todos', () => {
         ],
       });
     });
+
+    it('TODO 리스트 검색 - 완료된 항목만', async () => {
+      const res = await request(app.getHttpServer()).get('/api/todos').query({
+        isDone: 'true',
+      });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        list: [],
+      });
+    });
   });
 });
