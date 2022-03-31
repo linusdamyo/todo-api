@@ -60,7 +60,16 @@ export class TodosService {
     return new IdResponseDto(todoInfo?.id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} todo`;
+  async remove(id: number): Promise<IdResponseDto> {
+    const todoInfo = (
+      await this.todoModel.findOne({
+        where: { id },
+      })
+    ).get({ plain: true });
+    if (!todoInfo) throw new BadRequestException(`cannot find todo. id: ${id}`);
+
+    await this.todoModel.destroy({ where: { id } });
+
+    return new IdResponseDto(todoInfo?.id);
   }
 }
