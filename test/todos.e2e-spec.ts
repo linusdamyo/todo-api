@@ -57,4 +57,13 @@ describe('todos', () => {
     const todoInfo = await TodoEntity.findOne({ where: { id: todoId } });
     expect(todoInfo.contents).toBe('첫번째 TODO 내용을 수정');
   });
+
+  it('TODO 삭제', async () => {
+    const res = await request(app.getHttpServer()).delete(
+      `/api/todos/${todoId}`,
+    );
+    expect(res.statusCode).toBe(200);
+    const todoInfo = await TodoEntity.findOne({ where: { id: todoId } });
+    expect(todoInfo).toBeNull();
+  });
 });
