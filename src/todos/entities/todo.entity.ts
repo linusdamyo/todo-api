@@ -1,8 +1,10 @@
+import { TodoReferenceEntity } from './todo-reference.entity';
 import {
   AutoIncrement,
   Column,
   CreatedAt,
   DeletedAt,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
@@ -30,4 +32,7 @@ export class TodoEntity extends Model {
 
   @DeletedAt
   deleted_at: Date;
+
+  @HasMany(() => TodoReferenceEntity, { constraints: false })
+  todoReferenceList: TodoReferenceEntity[];
 }

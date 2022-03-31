@@ -6,6 +6,7 @@ import { TodosModule } from './todos/todos.module';
 import { TodoEntity } from './todos/entities/todo.entity';
 import { HttpExceptionFilter } from './common/exception/http-exception.filter';
 import { APP_FILTER } from '@nestjs/core';
+import { TodoReferenceEntity } from './todos/entities/todo-reference.entity';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { APP_FILTER } from '@nestjs/core';
       username: 'root',
       password: 'ajdajdsiasia',
       database: 'todo_test',
-      models: [TodoEntity],
+      models: [TodoEntity, TodoReferenceEntity],
     }),
     TodosModule,
   ],

@@ -9,12 +9,16 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoEntity } from './entities/todo.entity';
 import { TodoListResponseDto } from './dto/todo-list-response.dto';
 import { IdResponseDto } from '../common/dto/id-response.dto';
+import { ReferenceTodoRequestDto } from './dto/reference-todo-request.dto';
+import { TodoReferenceEntity } from './entities/todo-reference.entity';
 
 @Injectable()
 export class TodosService {
   constructor(
     @InjectModel(TodoEntity)
     private todoModel: typeof TodoEntity,
+    @InjectModel(TodoReferenceEntity)
+    private todoReferenceModel: typeof TodoReferenceEntity,
   ) {}
 
   async create(createTodoDto: CreateTodoDto): Promise<IdResponseDto> {
@@ -77,10 +81,25 @@ export class TodosService {
     return new IdResponseDto(todoInfo?.id);
   }
 
+  async reference(
+    id: number,
+    reqDto: ReferenceTodoRequestDto,
+  ): Promise<IdResponseDto> {
+    const todoInfo = await this.getTodoInfo(id);
+
+    await this.todoReferenceModel.create({
+      todo_id: id,
+      reference_id: reqDto.referenceId,
+    });
+
+    return new IdResponseDto(todoInfo?.id);
+  }
+
   private async getTodoInfo(id: number): Promise<TodoEntity> {
     const todoInfo = (
       await this.todoModel.findOne({
         where: { id },
+        include: TodoReferenceEntity,
       })
     ).get({ plain: true });
     if (!todoInfo) throw new BadRequestException(`cannot find todo. id: ${id}`);

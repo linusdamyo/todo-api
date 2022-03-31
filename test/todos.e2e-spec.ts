@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { TodoEntity } from '../src/todos/entities/todo.entity';
+import { TodoReferenceEntity } from '../src/todos/entities/todo-reference.entity';
 
 describe('todos', () => {
   let app: INestApplication;
@@ -127,6 +128,14 @@ describe('todos', () => {
         .post(`/api/todos/${todoInfoList[0].id}/reference`)
         .send({ referenceId: todoInfoList[1].id });
       expect(res.statusCode).toBe(201);
+      const todoInfo = await TodoEntity.findOne({
+        where: { id: todoInfoList[0].id },
+        include: TodoReferenceEntity,
+      });
+      expect(todoInfo.todoReferenceList[0].todo_id).toEqual(todoInfoList[0].id);
+      expect(todoInfo.todoReferenceList[0].reference_id).toEqual(
+        todoInfoList[1].id,
+      );
     });
   });
 });

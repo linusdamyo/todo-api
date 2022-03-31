@@ -15,6 +15,7 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 import { HttpExceptionFilter } from '../common/exception/http-exception.filter';
 import { TodoListResponseDto } from './dto/todo-list-response.dto';
 import { IdResponseDto } from '../common/dto/id-response.dto';
+import { ReferenceTodoRequestDto } from './dto/reference-todo-request.dto';
 
 @Controller('/todos')
 @UseFilters(new HttpExceptionFilter())
@@ -52,5 +53,13 @@ export class TodosController {
   @Put(':id/ready')
   async ready(@Param('id') id: string) {
     return this.todosService.ready(+id);
+  }
+
+  @Post(':id/reference')
+  async reference(
+    @Param('id') id: string,
+    @Body() reqDto: ReferenceTodoRequestDto,
+  ): Promise<IdResponseDto> {
+    return this.todosService.reference(+id, reqDto);
   }
 }
