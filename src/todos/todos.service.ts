@@ -12,6 +12,7 @@ import { IdResponseDto } from '../common/dto/id-response.dto';
 import { ReferenceTodoRequestDto } from './dto/reference-todo-request.dto';
 import { TodoReferenceEntity } from './entities/todo-reference.entity';
 import { Op } from 'sequelize';
+import { TodoListQueryRequestDto } from './dto/todo-list-query-request.dto';
 
 @Injectable()
 export class TodosService {
@@ -31,10 +32,15 @@ export class TodosService {
     return new IdResponseDto(todoInfo?.id);
   }
 
-  async findAll(): Promise<TodoListResponseDto> {
+  async findAll(reqDto: TodoListQueryRequestDto): Promise<TodoListResponseDto> {
+    const searchOption = {};
+    if (reqDto.contents) {
+      searchOption['contents'] = { [Op.like]: `%${reqDto.contents}%` };
+    }
+
     const todoInfoList: TodoEntity[] = (
       await this.todoModel.findAll({
-        where: { deleted_at: null },
+        where: { ...searchOption, deleted_at: null },
         order: [['id', 'DESC']],
         include: [{ model: TodoReferenceEntity, required: false }],
       })

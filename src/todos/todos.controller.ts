@@ -8,6 +8,7 @@ import {
   Delete,
   UseFilters,
   Put,
+  Query,
 } from '@nestjs/common';
 import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -16,6 +17,7 @@ import { HttpExceptionFilter } from '../common/exception/http-exception.filter';
 import { TodoListResponseDto } from './dto/todo-list-response.dto';
 import { IdResponseDto } from '../common/dto/id-response.dto';
 import { ReferenceTodoRequestDto } from './dto/reference-todo-request.dto';
+import { TodoListQueryRequestDto } from './dto/todo-list-query-request.dto';
 
 @Controller('/todos')
 @UseFilters(new HttpExceptionFilter())
@@ -28,8 +30,10 @@ export class TodosController {
   }
 
   @Get()
-  async findAll(): Promise<TodoListResponseDto> {
-    return this.todosService.findAll();
+  async findAll(
+    @Query() reqDto: TodoListQueryRequestDto,
+  ): Promise<TodoListResponseDto> {
+    return this.todosService.findAll(reqDto);
   }
 
   @Patch(':id')
