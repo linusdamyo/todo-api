@@ -20,6 +20,7 @@ describe('todos', () => {
   });
 
   afterAll(async () => {
+    await TodoReferenceEntity.destroy({ truncate: true, force: true });
     await TodoEntity.destroy({ truncate: true, force: true });
   });
 
@@ -40,11 +41,12 @@ describe('todos', () => {
     expect(res.body).toEqual({
       list: [
         {
-          id: res.body.list[0].id,
+          id: res.body.list?.[0]?.id,
           contents: '첫번째 TODO',
           isDone: false,
-          createdAt: res.body.list[0].createdAt,
-          updatedAt: res.body.list[0].updatedAt,
+          createdAt: res.body.list?.[0]?.createdAt,
+          updatedAt: res.body.list?.[0]?.updatedAt,
+          referenceList: [],
         },
       ],
     });
@@ -100,29 +102,6 @@ describe('todos', () => {
       }
     });
 
-    it('TODO 리스트', async () => {
-      const res = await request(app.getHttpServer()).get('/api/todos');
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual({
-        list: [
-          {
-            id: res.body.list[0].id,
-            contents: 'todo 아이템 3',
-            isDone: false,
-            createdAt: res.body.list[0].createdAt,
-            updatedAt: res.body.list[0].updatedAt,
-          },
-          {
-            id: res.body.list[1].id,
-            contents: 'todo 아이템 2',
-            isDone: false,
-            createdAt: res.body.list[1].createdAt,
-            updatedAt: res.body.list[1].updatedAt,
-          },
-        ],
-      });
-    });
-
     it('TODO 아이템 참조', async () => {
       const res = await request(app.getHttpServer())
         .post(`/api/todos/${todoInfoList[0].id}/reference`)
@@ -136,6 +115,36 @@ describe('todos', () => {
       expect(todoInfo.todoReferenceList[0].reference_id).toEqual(
         todoInfoList[1].id,
       );
+    });
+
+    it('TODO 리스트', async () => {
+      const res = await request(app.getHttpServer()).get('/api/todos');
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        list: [
+          {
+            id: res.body.list?.[0]?.id,
+            contents: 'todo 아이템 3',
+            isDone: false,
+            createdAt: res.body.list?.[0]?.createdAt,
+            updatedAt: res.body.list?.[0]?.updatedAt,
+            referenceList: [],
+          },
+          {
+            id: res.body.list?.[1]?.id,
+            contents: 'todo 아이템 2',
+            isDone: false,
+            createdAt: res.body.list?.[1]?.createdAt,
+            updatedAt: res.body.list?.[1]?.updatedAt,
+            referenceList: [
+              {
+                id: res.body.list?.[1]?.referenceList?.[0]?.id,
+                referenceId: todoInfoList?.[1]?.id,
+              },
+            ],
+          },
+        ],
+      });
     });
   });
 });
