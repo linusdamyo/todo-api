@@ -100,6 +100,14 @@ export class TodosService {
   ): Promise<IdResponseDto> {
     const todoInfo = await this.getTodoInfo(id);
 
+    if (
+      (await this.todoReferenceModel.count({
+        where: { todo_id: reqDto.referenceId, reference_id: id },
+      })) > 0
+    ) {
+      throw new BadRequestException('서로 참조는 불가합니다.');
+    }
+
     await this.todoReferenceModel.create({
       todo_id: id,
       reference_id: reqDto.referenceId,
