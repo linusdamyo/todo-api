@@ -30,4 +30,20 @@ describe('todos', () => {
     const todoInfo = await TodoEntity.findOne({ where: { id: res.body.id } });
     expect(todoInfo.contents).toBe('첫번째 TODO');
   });
+
+  it('TODO 리스트', async () => {
+    const res = await request(app.getHttpServer()).get('/api/todos');
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({
+      list: [
+        {
+          id: res.body.list[0].id,
+          contents: '첫번째 TODO',
+          isDone: false,
+          createdAt: res.body.list[0].createdAt,
+          updatedAt: res.body.list[0].updatedAt,
+        },
+      ],
+    });
+  });
 });
