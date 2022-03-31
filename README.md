@@ -22,52 +22,61 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## 실행환경
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+* macOS Monterey 12.3
+* MacBook Pro (16-inch, 2021)
+* Apple M1 Pro
+* Memory 16GB
+* NodeJS 버전 16.13.1
 
-## Installation
+## 사전준비
+
+[Docker Desktop](https://www.docker.com/products/docker-desktop/)을 설치해주세요.
+
+## 실행방법
 
 ```bash
+# npm package를 설치해주세요.
 $ npm install
+# scripts 디렉토리로 이동
+$ cd scripts
+# mariaDB를 docker-compose로 설치합니다.
+# 3306 PORT를 사용합니다.
+$ ./rundb.sh
+# 정상적으로 실행되었는지 확인합니다.
+$ docker ps -a
+# 실행이 실패했다면, ./rundb.sh을 다시 실행해주세요.
+$ ./rundb.sh
+# 필요한 db 테이블을 생성합니다.
+$ ./createdb.sh
+# 원래 디렉토리로 돌아갑니다.
+$ cd ..
+# e2e test를 돌려보아요.
+$ npm run test:e2e
 ```
 
-## Running the app
+## API 서버 실행하기
+
+> DB 접속 설정을 위한 .env 파일내용입니다.  
+> 설정 변경이 필요한 경우, .env 내용을 변경해주세요.
+
+```
+$ cat .env
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=todo_dev
+DB_USERNAME=root
+DB_PASSWORD=ajdajdsiasia
+```
+
+
+> 서버를 실행합니다.
 
 ```bash
-# development
-$ npm run start
-
 # watch mode
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+> API 서버가 정상적으로 실행되면,  
+> todo-front 를 실행합니다.
