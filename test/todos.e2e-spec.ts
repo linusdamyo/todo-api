@@ -58,6 +58,24 @@ describe('todos', () => {
     expect(todoInfo.contents).toBe('첫번째 TODO 내용을 수정');
   });
 
+  it('TODO 완료 처리', async () => {
+    const res = await request(app.getHttpServer()).put(
+      `/api/todos/${todoId}/done`,
+    );
+    expect(res.statusCode).toBe(200);
+    const todoInfo = await TodoEntity.findOne({ where: { id: todoId } });
+    expect(todoInfo.is_done).toBeTruthy();
+  });
+
+  it('TODO 미완료 처리', async () => {
+    const res = await request(app.getHttpServer()).put(
+      `/api/todos/${todoId}/ready`,
+    );
+    expect(res.statusCode).toBe(200);
+    const todoInfo = await TodoEntity.findOne({ where: { id: todoId } });
+    expect(todoInfo.is_done).toBeFalsy();
+  });
+
   it('TODO 삭제', async () => {
     const res = await request(app.getHttpServer()).delete(
       `/api/todos/${todoId}`,
