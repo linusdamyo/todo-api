@@ -1,9 +1,14 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoEntity } from './entities/todo.entity';
 import { TodoListResponseDto } from './dto/todo-list-response.dto';
+import { IdResponseDto } from '../common/dto/id-response.dto';
 
 @Injectable()
 export class TodosService {
@@ -12,13 +17,13 @@ export class TodosService {
     private todoModel: typeof TodoEntity,
   ) {}
 
-  async create(createTodoDto: CreateTodoDto) {
+  async create(createTodoDto: CreateTodoDto): Promise<IdResponseDto> {
     const todoInfo = await this.todoModel.create({
       contents: createTodoDto.contents,
     });
     if (!todoInfo) throw new ConflictException('cannot create todo.');
 
-    return { id: todoInfo?.id ?? 0 };
+    return new IdResponseDto(todoInfo?.id);
   }
 
   async findAll(): Promise<TodoListResponseDto> {
@@ -36,8 +41,23 @@ export class TodosService {
     return `This action returns a #${id} todo`;
   }
 
-  update(id: number, updateTodoDto: UpdateTodoDto) {
-    return `This action updates a #${id} todo`;
+  async update(
+    id: number,
+    updateTodoDto: UpdateTodoDto,
+  ): Promise<IdResponseDto> {
+    const todoInfo = (
+      await this.todoModel.findOne({
+        where: { id },
+      })
+    ).get({ plain: true });
+    if (!todoInfo) throw new BadRequestException(`cannot find todo. id: ${id}`);
+
+    await this.todoModel.update(
+      { contents: updateTodoDto.contents },
+      { where: { id } },
+    );
+
+    return new IdResponseDto(todoInfo?.id);
   }
 
   remove(id: number) {
