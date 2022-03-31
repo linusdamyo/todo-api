@@ -37,6 +37,9 @@ export class TodosService {
     if (reqDto.contents) {
       searchOption['contents'] = { [Op.like]: `%${reqDto.contents}%` };
     }
+    if (['true', 'false'].includes(reqDto.isDone)) {
+      searchOption['is_done'] = reqDto.isDone === 'true';
+    }
 
     const todoInfoList: TodoEntity[] = (
       await this.todoModel.findAll({
