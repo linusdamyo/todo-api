@@ -117,7 +117,7 @@ describe('todos', () => {
       );
     });
 
-    it('TODO 리스트', async () => {
+    it('TODO 리스트 with 참조목록', async () => {
       const res = await request(app.getHttpServer()).get('/api/todos');
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual({
@@ -145,6 +145,13 @@ describe('todos', () => {
           },
         ],
       });
+    });
+
+    it('TODO 완료 불가 - 참조된 항목이 완료되기 전까지는 완료시킬 수 없음', async () => {
+      const res = await request(app.getHttpServer()).put(
+        `/api/todos/${todoInfoList?.[0]?.id}/done`,
+      );
+      expect(res.statusCode).toBe(400);
     });
   });
 });
