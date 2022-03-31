@@ -37,30 +37,47 @@ export class TodosService {
     return new TodoListResponseDto(todoInfoList);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} todo`;
-  }
-
   async update(
     id: number,
     updateTodoDto: UpdateTodoDto,
   ): Promise<IdResponseDto> {
-    const todoInfo = (
-      await this.todoModel.findOne({
-        where: { id },
-      })
-    ).get({ plain: true });
-    if (!todoInfo) throw new BadRequestException(`cannot find todo. id: ${id}`);
+    const todoInfo = await this.getTodoInfo(id);
 
     await this.todoModel.update(
       { contents: updateTodoDto.contents },
-      { where: { id } },
+      { where: { id: todoInfo?.id } },
     );
 
     return new IdResponseDto(todoInfo?.id);
   }
 
+  async done(id: number) {
+    const todoInfo = await this.getTodoInfo(id);
+
+    await this.todoModel.update(
+      { is_done: true },
+      { where: { id: todoInfo?.id } },
+    );
+  }
+
+  async ready(id: number) {
+    const todoInfo = await this.getTodoInfo(id);
+
+    await this.todoModel.update(
+      { is_done: false },
+      { where: { id: todoInfo?.id } },
+    );
+  }
+
   async remove(id: number): Promise<IdResponseDto> {
+    const todoInfo = await this.getTodoInfo(id);
+
+    await this.todoModel.destroy({ where: { id } });
+
+    return new IdResponseDto(todoInfo?.id);
+  }
+
+  private async getTodoInfo(id: number): Promise<TodoEntity> {
     const todoInfo = (
       await this.todoModel.findOne({
         where: { id },
@@ -68,8 +85,6 @@ export class TodosService {
     ).get({ plain: true });
     if (!todoInfo) throw new BadRequestException(`cannot find todo. id: ${id}`);
 
-    await this.todoModel.destroy({ where: { id } });
-
-    return new IdResponseDto(todoInfo?.id);
+    return todoInfo;
   }
 }
