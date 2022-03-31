@@ -35,6 +35,7 @@ export class TodosService {
       await this.todoModel.findAll({
         where: { deleted_at: null },
         order: [['id', 'DESC']],
+        include: [{ model: TodoReferenceEntity, required: false }],
       })
     ).map((el) => el.get({ plain: true }));
 
